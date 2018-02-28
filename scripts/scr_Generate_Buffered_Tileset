@@ -1,0 +1,57 @@
+/// @func scr_Generate_Buffered_Tileset
+/// @param SpriteID
+/// @param bufferWidth
+/// @param TileSize
+
+draw_set_alpha(1);
+draw_set_color(c_white);
+
+var spr = argument0;
+var buff = argument1;
+var TileSize = argument2;
+if (!sprite_exists(spr)) return -1;
+
+
+var w = sprite_get_width(spr), h = sprite_get_height(spr);
+var saparation = buff * 2;
+var bW = w + ((w/TileSize)*saparation);
+var bH = h + ((h/TileSize)*saparation);
+
+
+var nS = surface_create(bW,bH);
+surface_set_target(nS);
+draw_clear_alpha(0,0);
+var XX = 0;
+var YY = 0;
+var sc = buff;//(TileSize+saparation) / TileSize
+var sc2 =(TileSize+saparation) / (TileSize);
+
+for (var Y = 0; Y < h; Y+=TileSize) {
+	
+	YY = Y + (Y/TileSize)*saparation;
+	
+	for (var X = 0; X < h; X+=TileSize)
+	{
+		
+		XX = X + (X/TileSize)*saparation;
+		
+		//Upper Line
+		draw_sprite_part_ext(spr,0,X,Y,TileSize,1,XX,YY,sc2,sc,c_white,1);
+		//Bottom Line
+		draw_sprite_part_ext(spr,0,X,Y+TileSize-1,TileSize,1,XX,YY+buff+TileSize,sc2,sc,c_white,1);
+		//Left Line
+		draw_sprite_part_ext(spr,0,X,Y,1,TileSize,XX,YY,sc,sc2,c_white,1);
+		//Right Line
+		draw_sprite_part_ext(spr,0,X+TileSize-1,Y,1,TileSize,XX+buff+TileSize,YY,sc,sc2,c_white,1);
+	
+		//Full Tile
+		draw_sprite_part(spr,0,X,Y,TileSize,TileSize,XX+buff,YY+buff);
+		
+			
+	}
+}
+
+surface_reset_target();
+var nSpr = sprite_create_from_surface(nS,0,0,bW,bH,false,false,0,0);
+surface_free(nS);
+return nSpr;
